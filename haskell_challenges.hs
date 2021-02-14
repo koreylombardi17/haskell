@@ -92,7 +92,7 @@ replicate' n a = a : replicate' (n-1) a
 -- elem :: Eq a => a -> [a] -> Bool
 elem' :: Eq a => a -> [a] -> Bool
 elem' _ [] = False
-elem' y (x:xs) | (y == x) = True
+elem' y (x:xs) | (y == x)  = True
                | otherwise = elem' y xs
 
 
@@ -112,7 +112,7 @@ merge l1@(x:xs) l2@(y:ys)
 msort :: Ord a => [a] -> [a]
 msort []  = []
 msort [x] = [x]
-msort xs = merge ys zs
+msort xs  = merge ys zs
              where 
                ys     = msort $ take middle xs
                zs     = msort $ drop middle xs
