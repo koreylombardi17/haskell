@@ -118,3 +118,43 @@ msort xs  = merge ys zs
                zs     = msort $ drop middle xs
                middle = length xs `div` 2
 
+
+-- Function that searchs for a value in a tree
+occurs' :: Ord a => a -> Tree a -> Bool
+occurs' x (Leaf y)      = (compare x y == EQ)
+occurs' x (Node l y r) | (compare x y == EQ) = True
+                       | (compare x y == LT) = (occurs' x l)
+                       | otherwise           = (occurs' x r)
+
+
+-- Extend the abstract machine to support the use of multiplication.
+-- Abstract Machine:
+
+data Expr = Val Int | Add Expr Expr | Mult Expr Expr
+type Cont = [Op]
+data Op = EVAL Expr | ADD Int | MULT Int
+
+eval :: Expr -> Cont -> Int
+eval (Val n) c    = exec c n
+eval (Add x y) c  = eval x (EVAL y : c)
+eval (Mult x y) c = eval x (EVAL y : c)
+-- eval evaluates an expression in the context of a control stack. That is, if the expression is an integer, it is
+-- already fully evaluated, and we begin executing the control stack. If the expression is an addition, we
+-- evaluate the first argument, x, placing the operation EVAL y on top of the control stack to indicate that
+-- the second argument, y, should be evaluated once evaluation of the first argument is completed.
+
+exec :: Cont -> Int -> Int
+exec [] n = n
+exec (EVAL y : c) n = eval y (ADD n : c)
+exec (ADD n : c) m  = exec c (n+m)
+exec (MULT n : c) m = exec c (n*m)
+-- exec executes a control stack in the context of an integer argument. That is, if the control stack is empty,
+-- we return the integer argument as the result of the execution. If the top of the control stack is an
+-- operation EVAL y, we evaluate the expression y, placing the operation ADD n on top of the remaining
+-- stack to indicate that the current integer argument, n, should be added together with the result of
+-- evaluating y once this is completed. And finally, if the top of the stack is an operation ADD n, evaluation
+-- of the two arguments of an addition expression is now complete, and we execute the remaining control
+-- stack in the context of the sum of the two resulting integer values.
+
+value :: Expr -> Int
+value e = eval e []
