@@ -158,3 +158,38 @@ exec (MULT n : c) m = exec c (n*m)
 
 value :: Expr -> Int
 value e = eval e []
+
+-- Define an action adder :: IO () that reads a given number of integers from the key board, one per
+-- line, and displays their sum. For example:
+adder :: IO ()
+adder =  do putStr "How many numbers do you want to add?"
+            size <- getLine
+            numbers <- get_numbers (read size :: Int)
+            putStrLn ("Total = " ++ show (sum numbers))
+
+
+get_numbers        :: Int -> IO [Int]
+get_numbers 0      =  return []
+get_numbers index  =  do
+                         number_as_string <- getLine
+                         let number = read number_as_string :: Int
+						 numbers <- get_numbers (index - 1)
+                         return (number : numbers)
+
+-- Define a program
+-- fibs :: [Integer]
+-- that generates the infinite Fibonacci sequence
+-- [0,1,1,2,3,5,8,13,21,34, …
+-- using the following procedure:
+-- a) The first two numbers are 0 and 1;
+-- b) The next is the sum of the previous two;
+-- c) Return to step 2.
+-- II. Define a function
+-- fib :: Int -> Integer
+-- that calculates the nth Fibonacci number.
+fibs :: [Integer]
+fibs = 0:1:[ first + second | (first, second) <- zip fibs (tail fibs)]
+
+
+fib       :: Int -> Integer
+fib index = fibs !! (index - 1)
